@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Cloning
-   echo 'Cloning Xiv3r Burpsuite Professional'
+   echo 'Cloning Sdmrf Burpsuite Professional...'
    git clone https://github.com/sdmrf/BurpSuite-Pro.git     
    cd /home/*/Burpsuite-Professional/
  
@@ -17,7 +17,7 @@
     wget "$Link" -O burpsuite_pro_v$version.jar --quiet --show-progress
 
 # Execute Key Generator.
-    echo 'Starting Key Generator'
+    echo 'Starting Key Generator...'
     (java -jar /home/*/Burpsuite-Professional/loader.jar) &
     sleep 2s
 
