@@ -3,7 +3,7 @@
 # Cloning
    echo 'Cloning Sdmrf Burpsuite Professional...'
    git clone https://github.com/sdmrf/BurpSuite-Pro.git     
-   cd /home/*/Burpsuite-Professional/
+   cd /home/*/Burpsuite-Pro/
  
 # Download Burpsuite Professional Latest.
     echo 'Downloading Burpsuite Professional Latest...'
@@ -18,7 +18,7 @@
 
 # Execute Key Generator.
     echo 'Starting Key Generator...'
-    (java -jar /home/*/Burpsuite-Professional/loader.jar) &
+    (java -jar /home/*/Burpsuite-Pro/loader.jar) &
     sleep 2s
 
 # Execute Burp Suite Professional
