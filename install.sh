@@ -24,15 +24,21 @@ function download_burpsuite() {
     wget "$download_link" -O "burpsuite_pro_v$version.jar" --quiet
 }
 
+# Clean up existing directory if it exists
+if [ -d "$HOME/BurpSuite-Pro" ]; then
+    print_status "Cleaning up existing directory $HOME/BurpSuite-Pro..."
+    sudo rm -rf "$HOME/BurpSuite-Pro"
+fi
+
 # Clone the repository
 print_status "Cloning Sdmrf Burpsuite Professional..."
 git clone "$REPO_URL" "$HOME/BurpSuite-Pro" || { echo "Cloning failed!"; exit 1; }
-cd "$HOME/Burpsuite-Pro" || { echo "Cannot navigate to Burpsuite-Pro directory!"; exit 1; }
+cd "$HOME/BurpSuite-Pro" || { echo "Cannot navigate to Burpsuite-Pro directory!"; exit 1; }
 
 # Set up Burp Suite directory and copy loader
 print_status "Setting up Burpsuite Professional..."
 sudo mkdir -p "$BURP_DIR"
-sudo cp -r "$LOADER_JAR" "$BURP_DIR"
+sudo cp "$HOME/BurpSuite-Pro/$LOADER_JAR" "$BURP_DIR" || { echo "Failed to copy $LOADER_JAR!"; exit 1; }
 cd "$BURP_DIR" || { echo "Cannot navigate to Burpsuite directory!"; exit 1; }
 
 # Download the latest Burp Suite Professional
@@ -40,7 +46,7 @@ download_burpsuite
 
 # Start the Key Generator
 print_status "Starting Key Generator..."
-(java -jar "$HOME/Burpsuite-Pro/$LOADER_JAR") & sleep 2
+(java -jar "$BURP_DIR/$LOADER_JAR") & sleep 2
 
 # Generate executable script for Burp Suite
 print_status "Generating executable script for Burpsuite Professional..."
