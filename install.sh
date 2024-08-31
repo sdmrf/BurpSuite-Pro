@@ -16,7 +16,7 @@ download_burpsuite() {
     print_status "Please wait while we complete the process :)"
     local html version download_link
     html=$(curl -s "$BURP_RELEASES_URL")
-    version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
+    version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\.[0-9]+\.[0-9]+' | head -n 1)
 
     print_status "Found Burp Suite Version: $version"
     download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
