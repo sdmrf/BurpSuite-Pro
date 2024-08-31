@@ -79,8 +79,8 @@ main() {
     cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
     generate_script
-    start_key_generator
     launch_burpsuite
+    start_key_generator
 }
 
 main "$@"
