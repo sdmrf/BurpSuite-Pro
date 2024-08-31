@@ -19,8 +19,9 @@ function download_burpsuite() {
     version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
     local download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
     print_status "Found Burpsuite Version: $version"
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" --quiet
-    echo "$version"
+    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" --show-progress
+    print_status "Renaming JAR file..."
+    mv "$BURP_DIR/burpsuite_pro_v$version.jar" "$BURP_DIR/burpsuite_pro_v.jar"
 }
 
 if [ -d "$BURP_CLONE_DIR" ]; then
@@ -37,7 +38,7 @@ sudo mkdir -p "$BURP_DIR"
 sudo cp "$LOADER_JAR" "$BURP_DIR" || { echo "Failed to copy $LOADER_JAR!"; exit 1; }
 cd "$BURP_DIR" || { echo "Cannot navigate to Burpsuite directory!"; exit 1; }
 
-version=$(download_burpsuite)
+download_burpsuite
 
 print_status "Starting Key Generator..."
 (java -jar "$BURP_DIR/$LOADER_JAR") & sleep 2
@@ -53,7 +54,7 @@ java \\
   --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
   -javaagent:$BURP_DIR/$LOADER_JAR \\
   -noverify \\
-  -jar $BURP_DIR/burpsuite_pro_v$version.jar &
+  -jar $BURP_DIR/burpsuite_pro_v.jar &
 EOF
 
 sudo chmod +x "$BURP_SCRIPT"
