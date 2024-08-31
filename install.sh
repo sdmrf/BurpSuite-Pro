@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
-BURP_CLONE_DIR="/home/*/BurpSuite-Pro"
+BURP_CLONE_DIR="$HOME/BurpSuite-Pro"  # Use $HOME for user's home directory
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
 LOADER_JAR="BurpLoaderKeyGen.jar"
@@ -17,13 +17,11 @@ download_burpsuite() {
     local html version download_link
     html=$(curl -s "$BURP_RELEASES_URL")
     
-    print_status "Found Burp Suite Version: $version"
-    version=$(echo $html | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
+    version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
     download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
 
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || { echo "Download failed!"; exit 1; }
+    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" -q --progress=bar:force || { echo "Download failed!"; exit 1; }
     print_status "Downloaded Burp Suite Version: $version"
-
 }
 
 cleanup_existing_dir() {
@@ -56,17 +54,22 @@ java \\
   --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
   -javaagent:$BURP_DIR/$LOADER_JAR \\
   -noverify \\
-  -jar $BURP_DIR/burpsuite_pro.jar &
+  -jar $BURP_DIR/burpsuite_pro_v$version.jar &
 EOF
 
     sudo chmod +x "$BURP_SCRIPT" || { echo "Failed to make the script executable!"; exit 1; }
     print_status "Script generated at $BURP_SCRIPT"
 }
 
+start_key_generator() {
+    print_status "Starting Key Generator..."
+    java -jar "$BURP_DIR/$LOADER_JAR" || { echo "Failed to start the Key Generator!"; exit 1; }
+    print_status "Key Generator process has started. Follow the instructions to generate the key."
+}
+
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
     "$BURP_SCRIPT" || { echo "Failed to launch Burp Suite!"; exit 1; }
-    print_status "Follow the process to generate a key and add it to Burp Suite Pro to activate it."
 }
 
 main() {
@@ -76,6 +79,7 @@ main() {
     cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
     generate_script
+    start_key_generator
     launch_burpsuite
 }
 
