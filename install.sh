@@ -2,7 +2,7 @@
 
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
-BURP_CLONE_DIR="$HOME/BurpSuite-Pro"
+BURP_CLONE_DIR="/home/*/BurpSuite-Pro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
 LOADER_JAR="BurpLoaderKeyGen.jar"
@@ -19,7 +19,7 @@ download_burpsuite() {
     download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
 
     print_status "Found Burpsuite Version: $version"
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" --show-progress || { echo "Download failed!"; exit 1; }
+    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" || { echo "Download failed!"; exit 1; }
 
     print_status "Renaming JAR file..."
     mv "$BURP_DIR/burpsuite_pro_v$version.jar" "$BURP_DIR/burpsuite_pro_v.jar" || { echo "Renaming JAR failed!"; exit 1; }
