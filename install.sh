@@ -3,6 +3,7 @@
 # Define constants
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
+BURP_CLONE_DIR="$HOME/BurpSuite-Pro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
 LOADER_JAR="BurpLoaderKeyGen.jar"
@@ -22,33 +23,34 @@ function download_burpsuite() {
     local download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
     print_status "Found Burpsuite Version: $version"
     wget "$download_link" -O "burpsuite_pro_v$version.jar" --quiet
+    echo "$version"
 }
 
 # Clean up existing directory if it exists
-if [ -d "$HOME/BurpSuite-Pro" ]; then
-    print_status "Cleaning up existing directory $HOME/BurpSuite-Pro..."
-    sudo rm -rf "$HOME/BurpSuite-Pro"
+if [ -d "$BURP_CLONE_DIR" ]; then
+    print_status "Cleaning up existing directory $BURP_CLONE_DIR..."
+    rm -rf "$BURP_CLONE_DIR"
 fi
 
-# Clone the repository
+# Clone the repository into $HOME/BurpSuite-Pro
 print_status "Cloning Sdmrf Burpsuite Professional..."
-git clone "$REPO_URL" "$HOME/BurpSuite-Pro" || { echo "Cloning failed!"; exit 1; }
-cd "$HOME/BurpSuite-Pro" || { echo "Cannot navigate to Burpsuite-Pro directory!"; exit 1; }
+git clone "$REPO_URL" "$BURP_CLONE_DIR" || { echo "Cloning failed!"; exit 1; }
+cd "$BURP_CLONE_DIR" || { echo "Cannot navigate to Burpsuite-Pro directory!"; exit 1; }
 
 # Set up Burp Suite directory and copy loader
 print_status "Setting up Burpsuite Professional..."
 sudo mkdir -p "$BURP_DIR"
-sudo cp "$HOME/BurpSuite-Pro/$LOADER_JAR" "$BURP_DIR" || { echo "Failed to copy $LOADER_JAR!"; exit 1; }
+sudo cp "$LOADER_JAR" "$BURP_DIR" || { echo "Failed to copy $LOADER_JAR!"; exit 1; }
 cd "$BURP_DIR" || { echo "Cannot navigate to Burpsuite directory!"; exit 1; }
 
-# Download the latest Burp Suite Professional
-download_burpsuite
+# Download the latest Burp Suite Professional and capture version
+version=$(download_burpsuite)
 
 # Start the Key Generator
 print_status "Starting Key Generator..."
 (java -jar "$BURP_DIR/$LOADER_JAR") & sleep 2
 
-# Generate executable script for Burp Suite
+# Generate executable script for Burp Suite, including the captured version
 print_status "Generating executable script for Burpsuite Professional..."
 cat << EOF | sudo tee "$BURP_SCRIPT" > /dev/null
 #!/bin/bash
