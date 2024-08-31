@@ -5,7 +5,7 @@ REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
-LOADER_JAR="loader.jar"
+LOADER_JAR="BurpLoaderKeyGen.jar"
 
 # Function to print status messages
 function print_status() {
@@ -21,7 +21,7 @@ function download_burpsuite() {
     version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
     local download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
     print_status "Found Burpsuite Version: $version"
-    wget "$download_link" -O "burpsuite_pro_v$version.jar" --quiet --show-progress
+    wget "$download_link" -O "burpsuite_pro_v$version.jar" --quiet
 }
 
 # Clone the repository
