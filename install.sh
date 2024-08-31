@@ -26,7 +26,7 @@ function download_burpsuite() {
 
 # Clone the repository
 print_status "Cloning Sdmrf Burpsuite Professional..."
-git clone "$REPO_URL" "$HOME/Burpsuite-Pro" || { echo "Cloning failed!"; exit 1; }
+git clone "$REPO_URL" "$HOME/BurpSuite-Pro" || { echo "Cloning failed!"; exit 1; }
 cd "$HOME/Burpsuite-Pro" || { echo "Cannot navigate to Burpsuite-Pro directory!"; exit 1; }
 
 # Set up Burp Suite directory and copy loader
