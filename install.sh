@@ -17,14 +17,12 @@ download_burpsuite() {
     local html version download_link
     html=$(curl -s "$BURP_RELEASES_URL")
     version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
-    download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
+    download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version&"
 
     print_status "Found Burp Suite Version: $version"
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" || { echo "Download failed!"; exit 1; }
+    wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || { echo "Download failed!"; exit 1; }
     print_status "Downloaded Burp Suite Version: $version"
 
-    print_status "Renaming JAR file..."
-    mv "$BURP_DIR/burpsuite_pro_v$version.jar" "$BURP_DIR/burpsuite_pro.jar" || { echo "Renaming JAR file failed!"; exit 1; }
 }
 
 cleanup_existing_dir() {
