@@ -12,17 +12,19 @@ print_status() {
 }
 
 download_burpsuite() {
-    print_status "Downloading Burpsuite Professional Latest..."
+    print_status "Downloading the latest Burp Suite Professional..."
+    print_status "Please wait while we complete the process :)"
     local html version download_link
     html=$(curl -s "$BURP_RELEASES_URL")
     version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
     download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
 
-    print_status "Found Burpsuite Version: $version"
+    print_status "Found Burp Suite Version: $version"
     wget "$download_link" -O "$BURP_DIR/burpsuite_pro_v$version.jar" || { echo "Download failed!"; exit 1; }
+    print_status "Downloaded Burp Suite Version: $version"
 
     print_status "Renaming JAR file..."
-    mv "$BURP_DIR/burpsuite_pro_v$version.jar" "$BURP_DIR/burpsuite_pro_v.jar" || { echo "Renaming JAR failed!"; exit 1; }
+    mv "$BURP_DIR/burpsuite_pro_v$version.jar" "$BURP_DIR/burpsuite_pro.jar" || { echo "Renaming JAR file failed!"; exit 1; }
 }
 
 cleanup_existing_dir() {
@@ -33,18 +35,18 @@ cleanup_existing_dir() {
 }
 
 clone_repo() {
-    print_status "Cloning Sdmrf Burpsuite Professional..."
+    print_status "Cloning the Burp Suite Professional repository..."
     git clone "$REPO_URL" "$BURP_CLONE_DIR" || { echo "Cloning failed!"; exit 1; }
 }
 
 setup_burpsuite() {
-    print_status "Setting up Burpsuite Professional..."
+    print_status "Setting up Burp Suite Professional..."
     sudo mkdir -p "$BURP_DIR" || { echo "Failed to create directory!"; exit 1; }
     sudo cp "$BURP_CLONE_DIR/$LOADER_JAR" "$BURP_DIR" || { echo "Failed to copy $LOADER_JAR!"; exit 1; }
 }
 
 generate_script() {
-    print_status "Generating executable script for Burpsuite Professional..."
+    print_status "Generating executable script for Burp Suite Professional..."
     cat << EOF | sudo tee "$BURP_SCRIPT" > /dev/null
 #!/bin/bash
 java \\
@@ -55,23 +57,24 @@ java \\
   --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
   -javaagent:$BURP_DIR/$LOADER_JAR \\
   -noverify \\
-  -jar $BURP_DIR/burpsuite_pro_v.jar &
+  -jar $BURP_DIR/burpsuite_pro.jar &
 EOF
 
-    sudo chmod +x "$BURP_SCRIPT" || { echo "Failed to make script executable!"; exit 1; }
+    sudo chmod +x "$BURP_SCRIPT" || { echo "Failed to make the script executable!"; exit 1; }
     print_status "Script generated at $BURP_SCRIPT"
 }
 
 launch_burpsuite() {
-    print_status "Launching Burpsuite Professional..."
-    "$BURP_SCRIPT" || { echo "Failed to launch Burpsuite!"; exit 1; }
+    print_status "Launching Burp Suite Professional..."
+    "$BURP_SCRIPT" || { echo "Failed to launch Burp Suite!"; exit 1; }
+    print_status "Follow the process to generate a key and add it to Burp Suite Pro to activate it."
 }
 
 main() {
     cleanup_existing_dir
     clone_repo
     setup_burpsuite
-    cd "$BURP_DIR" || { echo "Cannot navigate to Burpsuite directory!"; exit 1; }
+    cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
     generate_script
     launch_burpsuite
