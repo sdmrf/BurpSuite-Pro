@@ -1,9 +1,15 @@
 #!/bin/bash
+
 # Author: Sdmrf
 
+# Variables
 BURP_DIR="/usr/share/burpsuitepro"
 BURP_CLONE_DIR="$HOME/BurpSuite-Pro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
+
+print_status() {
+    echo -e "\e[1;34m$1\e[0m"
+}
 
 cleanup_existing_dir() {
     print_status "Cleaning up existing directory $BURP_CLONE_DIR..."
