@@ -70,9 +70,11 @@ EOF
 
 start_key_generator() {
     print_status "Starting Key Generator..."
-    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" || handle_error "Failed to start the Key Generator!"
+    java -version 2>&1 || handle_error "Java is not installed or not accessible!"
+    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" & sleep 2s || handle_error "Failed to start the Key Generator!"
     print_status "Key Generator process has started. Follow the instructions to generate the key."
 }
+
 
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
@@ -86,7 +88,6 @@ main() {
     setup_burpsuite
     generate_script
     start_key_generator
-    sleep 5s
     launch_burpsuite
 }
 
