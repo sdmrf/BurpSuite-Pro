@@ -81,9 +81,9 @@ main() {
     setup_burpsuite
     cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
-    generate_script
     launch_burpsuite
     sleep 5s
+    generate_script
     start_key_generator
 }
 
