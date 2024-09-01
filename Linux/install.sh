@@ -81,13 +81,13 @@ launch_burpsuite() {
 
 main() {
     cleanup_existing_dir
+    clone_repo
     download_burpsuite
     setup_burpsuite
-    clone_repo
     generate_script
-    launch_burpsuite
-    sleep 5s
     start_key_generator
+    sleep 5s
+    launch_burpsuite
 }
 
 main "$@"
