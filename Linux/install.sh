@@ -54,13 +54,6 @@ generate_script() {
     sudo tee "$BURP_SCRIPT" > /dev/null << EOF
 #!/bin/bash
 java \\
-  --add-opens=java.desktop/javax.swing=ALL-UNNAMED \\
-  --add-opens=java.base/java.lang=ALL-UNNAMED \\
-  --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED \\
-  --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED \\
-  --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
-  -javaagent:$BURP_DIR/BurpLoaderKeyGen.jar \\
-  -noverify \\
   -jar $BURP_DIR/burpsuite_pro.jar &
 EOF
 
