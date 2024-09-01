@@ -14,40 +14,44 @@ print_status() {
     echo -e "\e[1;34m$1\e[0m"
 }
 
+handle_error() {
+    echo -e "\e[1;31m$1\e[0m"
+    exit 1
+}
+
 download_burpsuite() {
     print_status "Downloading the latest Burp Suite Professional..."
-    print_status "Please wait while we complete the process :)"
     local html version download_link
-    html=$(curl -s "$BURP_RELEASES_URL")
-    
+    html=$(curl -s "$BURP_RELEASES_URL") || handle_error "Failed to fetch release page."
+
     version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
     download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
 
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || { echo "Download failed!"; exit 1; }
+    wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || handle_error "Download failed!"
     print_status "Downloaded Burp Suite Version: $version"
 }
 
 cleanup_existing_dir() {
-    if [ -d "$BURP_CLONE_DIR" ]; then
+    [ -d "$BURP_CLONE_DIR" ] && {
         print_status "Cleaning up existing directory $BURP_CLONE_DIR..."
-        rm -rf "$BURP_CLONE_DIR" || { echo "Cleanup failed!"; exit 1; }
-    fi
+        rm -rf "$BURP_CLONE_DIR" || handle_error "Cleanup failed!"
+    }
 }
 
 clone_repo() {
     print_status "Cloning the Burp Suite Professional repository..."
-    git clone "$REPO_URL" "$BURP_CLONE_DIR" || { echo "Cloning failed!"; exit 1; }
+    git clone "$REPO_URL" "$BURP_CLONE_DIR" || handle_error "Cloning failed!"
 }
 
 setup_burpsuite() {
     print_status "Setting up Burp Suite Professional..."
-    sudo mkdir -p "$BURP_DIR" || { echo "Failed to create directory!"; exit 1; }
-    wget "$LOADER_JAR_URL" -O "$BURP_DIR/BurpLoaderKeyGen.jar" || { echo "Failed to download BurpLoaderKeyGen.jar!"; exit 1; }
+    sudo mkdir -p "$BURP_DIR" || handle_error "Failed to create directory!"
+    wget "$LOADER_JAR_URL" -O "$BURP_DIR/BurpLoaderKeyGen.jar" || handle_error "Failed to download BurpLoaderKeyGen.jar!"
 }
 
 generate_script() {
     print_status "Generating executable script for Burp Suite Professional..."
-    cat << EOF | sudo tee "$BURP_SCRIPT" > /dev/null
+    sudo tee "$BURP_SCRIPT" > /dev/null << EOF
 #!/bin/bash
 java \\
   --add-opens=java.desktop/javax.swing=ALL-UNNAMED \\
@@ -60,30 +64,29 @@ java \\
   -jar $BURP_DIR/burpsuite_pro.jar &
 EOF
 
-    sudo chmod +x "$BURP_SCRIPT" || { echo "Failed to make the script executable!"; exit 1; }
+    sudo chmod +x "$BURP_SCRIPT" || handle_error "Failed to make the script executable!"
     print_status "Script generated at $BURP_SCRIPT"
 }
 
 start_key_generator() {
     print_status "Starting Key Generator..."
-    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" || { echo "Failed to start the Key Generator!"; exit 1; }
+    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" || handle_error "Failed to start the Key Generator!"
     print_status "Key Generator process has started. Follow the instructions to generate the key."
 }
 
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
-    "$BURP_SCRIPT" || { echo "Failed to launch Burp Suite!"; exit 1; }
+    "$BURP_SCRIPT" || handle_error "Failed to launch Burp Suite!"
 }
 
 main() {
     cleanup_existing_dir
-    clone_repo
-    setup_burpsuite
-    cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
+    setup_burpsuite
+    clone_repo
+    generate_script
     launch_burpsuite
     sleep 5s
-    generate_script
     start_key_generator
 }
 
