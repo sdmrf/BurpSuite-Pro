@@ -5,7 +5,7 @@
 # Variables
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
-BURP_CLONE_DIR="$HOME/BurpSuite-Pro"
+BURP_CLONE_DIR="/home/*/BurpSuite-Pro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
 LOADER_JAR_URL="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/BurpLoaderKeyGen.jar"
@@ -82,9 +82,9 @@ main() {
     cd "$BURP_DIR" || { echo "Cannot navigate to Burp Suite directory!"; exit 1; }
     download_burpsuite
     generate_script
-    start_key_generator
-    sleep 5
     launch_burpsuite
+    sleep 5s
+    start_key_generator
 }
 
 main "$@"
