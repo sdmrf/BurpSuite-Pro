@@ -68,18 +68,20 @@ EOF
     print_status "Script generated at $BURP_SCRIPT"
 }
 
-start_key_generator() {
-    print_status "Starting Key Generator..."
-    java -version 2>&1 || handle_error "Java is not installed or not accessible!"
-    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" & sleep 5s || handle_error "Failed to start the Key Generator!"
-    print_status "Key Generator process has started. Follow the instructions to generate the key."
-}
-
-
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
     "$BURP_SCRIPT" || handle_error "Failed to launch Burp Suite!"
 }
+
+start_key_generator() {
+    print_status "Starting Key Generator..."
+    java -version 2>&1 || handle_error "Java is not installed or not accessible!"
+    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" & sleep 5s & launch_burpsuite|| handle_error "Failed to start the Key Generator!"
+    print_status "Key Generator process has started. Follow the instructions to generate the key."
+}
+
+
+
 
 main() {
     cleanup_existing_dir
@@ -88,7 +90,6 @@ main() {
     setup_burpsuite
     generate_script
     start_key_generator
-    launch_burpsuite
 }
 
 main "$@"
