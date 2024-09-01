@@ -1,4 +1,5 @@
 #!/bin/bash
+# Author: Sdmrf
 
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
