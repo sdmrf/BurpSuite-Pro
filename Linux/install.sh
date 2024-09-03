@@ -5,59 +5,47 @@
 # Variables
 REPO_URL="https://github.com/sdmrf/BurpSuite-Pro.git"
 BURP_DIR="/usr/share/burpsuitepro"
-BURP_CLONE_DIR="/home/*/BurpSuite-Pro"
+BURP_CLONE_DIR="$HOME/BurpSuite-Pro"
 BURP_SCRIPT="/usr/local/bin/burpsuitepro"
 BURP_RELEASES_URL="https://portswigger.net/burp/releases"
 LOADER_JAR_URL="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/BurpLoaderKeyGen.jar"
-USERNAME_FILE="/usr/share/burpsuitepro/username.txt"
 
 print_status() {
     echo -e "\e[1;34m$1\e[0m"
 }
 
-handle_error() {
+error_status() {
     echo -e "\e[1;31m$1\e[0m"
     exit 1
 }
 
-get_username() {
-    if [ ! -f "$USERNAME_FILE" ]; then
-        read -p "Enter your username for the Burp Suite key loader: " username
-        echo "$username" > "$USERNAME_FILE" || handle_error "Failed to save username!"
-    else
-        username=$(cat "$USERNAME_FILE")
-    fi
-    echo "$username"
-}
-
-download_burpsuite() {
-    print_status "Downloading the latest Burp Suite Professional..."
-    local html version download_link
-    html=$(curl -s "$BURP_RELEASES_URL") || handle_error "Failed to fetch release page."
-
-    version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]+\-[0-9]+\-[0-9]+' | head -n 1)
-    download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
-
-    wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || handle_error "Download failed!"
-    print_status "Downloaded Burp Suite Version: $version"
-}
-
 cleanup_existing_dir() {
-    [ -d "$BURP_CLONE_DIR" ] && {
+    if [ -d "$BURP_CLONE_DIR" ]; then
         print_status "Cleaning up existing directory $BURP_CLONE_DIR..."
-        rm -rf "$BURP_CLONE_DIR" || handle_error "Cleanup failed!"
-    }
+        rm -rf "$BURP_CLONE_DIR" || error_status "Cleanup failed!"
+    fi
 }
 
 clone_repo() {
     print_status "Cloning the Burp Suite Professional repository..."
-    git clone "$REPO_URL" "$BURP_CLONE_DIR" || handle_error "Cloning failed!"
+    git clone "$REPO_URL" "$BURP_CLONE_DIR" || error_status "Cloning failed!"
 }
 
-setup_burpsuite() {
-    print_status "Setting up Burp Suite Professional..."
-    sudo mkdir -p "$BURP_DIR" || handle_error "Failed to create directory!"
-    wget "$LOADER_JAR_URL" -O "$BURP_DIR/BurpLoaderKeyGen.jar" || handle_error "Failed to download BurpLoaderKeyGen.jar!"
+download_burpsuite() {
+    print_status "Downloading the latest Burp Suite Professional..."
+    print_status "Please wait while we complete the process :)"
+    local html version download_link
+    sudo mkdir -p "$BURP_DIR" || error_status "Failed to make directory '$BURP_DIR'"
+    html=$(curl -s "$BURP_RELEASES_URL")
+    version=$(echo "$html" | grep -Po '(?<=/burp/releases/professional-community-)[0-9]{4}\.[0-9]+\.[0-9]+' | head -n 1)
+    download_link="https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
+    sudo wget "$download_link" -O "$BURP_DIR/burpsuite_pro.jar" -q --progress=bar:force || error_status "Download failed!"
+    print_status "Downloaded Burp Suite Version: $version"
+}
+
+download_loader_jar() {
+    print_status "Downloading the latest Burp Loader Key Generator..."
+    sudo wget "$LOADER_JAR_URL" -O "$BURP_DIR/BurpLoaderKeyGen.jar" || error_status "Failed to download BurpLoaderKeyGen.jar!"
 }
 
 generate_script() {
@@ -65,39 +53,40 @@ generate_script() {
     sudo tee "$BURP_SCRIPT" > /dev/null << EOF
 #!/bin/bash
 java \\
+  --add-opens=java.desktop/javax.swing=ALL-UNNAMED \\
+  --add-opens=java.base/java.lang=ALL-UNNAMED \\
+  --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED \\
+  --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED \\
+  --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
+  -javaagent:$BURP_DIR/BurpLoaderKeyGen.jar \\
+  -noverify \\
   -jar $BURP_DIR/burpsuite_pro.jar &
 EOF
 
-    sudo chmod +x "$BURP_SCRIPT" || handle_error "Failed to make the script executable!"
+    sudo chmod +x "$BURP_SCRIPT" || error_status "Failed to make the script executable!"
     print_status "Script generated at $BURP_SCRIPT"
-}
-
-start_key_generator() {
-    local username
-    username=$(get_username)
-    print_status "Starting Key Generator with username: $username..."
-    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" -username "$username" || handle_error "Failed to start the Key Generator!"
-    print_status "Key Generator process has started. Follow the instructions to generate the key."
 }
 
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
-    "$BURP_SCRIPT" || handle_error "Failed to launch Burp Suite!"
+    "$BURP_SCRIPT" || error_status "Failed to launch Burp Suite!"
+    sleep 5s
+}
+
+start_key_generator() {
+    print_status "Starting Key Generator..."
+    java -jar "$BURP_DIR/BurpLoaderKeyGen.jar" || { echo "Failed to start the Key Generator!"; exit 1; }
+    print_status "Key Generator process has started. Follow the instructions to generate the key."
 }
 
 main() {
     cleanup_existing_dir
     clone_repo
-    setup_burpsuite
     download_burpsuite
+    download_loader_jar
     generate_script
-
-    if [ ! -f "$USERNAME_FILE" ]; then
-        start_key_generator
-        sleep 5s  # Ensure Key Generator is fully initialized
-    fi
-
     launch_burpsuite
+    start_key_generator
 }
 
 main "$@"
