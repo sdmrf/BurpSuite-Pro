@@ -1,7 +1,7 @@
 # Burp Suite Professional
 
 **Enhance Your Testing Skills with Burp Suite Professional**
-** ~ Test like a Pro, with Ignorance is a Bliss as a Motto ~ **
+Test like a Pro, with Ignorance is a Bliss as a Motto
 
 ![BurpSuite-Banner](images/BurpSuitePro_2.png)
 
@@ -45,12 +45,12 @@ sudo pacman -S jdk-openjdk git curl wget
 ## Installation
 
 ### Automated Installation
-To install Burp Suite Professional, run the following command(root user):
+To install Burp Suite Professional, run the following command (root user):
 
 ```bash
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/install.sh | sudo bash
 ```
-IMP: Make sure to put your password after running this command as it is root user command.
+Note: Make sure to enter your password after running this command as it is executed with root privileges.
 
 ### Manual Installation
 If you prefer a manual installation, follow the steps below:
@@ -79,7 +79,7 @@ burpsuitepro
 ## Uninstallation
 
 ### Automated Uninstallation
-To uninstall Burp Suite Professional, run the following command(root user):
+To uninstall Burp Suite Professional, run the following command (root user):
 
 ```bash
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/uninstall.sh | sudo bash
@@ -100,7 +100,7 @@ sudo bash uninstall.sh
 ## Update (Optional)
 
 ### Automated Update
-To update Burp Suite Professional, run the following command(root user):
+To update Burp Suite Professional, run the following command (root user):
 
 ```bash
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/update.sh | sudo bash
