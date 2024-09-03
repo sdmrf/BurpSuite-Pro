@@ -1,7 +1,7 @@
 # Burp Suite Professional
 
 **Enhance Your Testing Skills with Burp Suite Professional**
-Test like a Pro, with Ignorance is a Bliss as a Motto
+*~Test like a Pro, with Ignorance is a Bliss as a Motto*
 
 ![BurpSuite-Banner](images/BurpSuitePro_2.png)
 
