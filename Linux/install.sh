@@ -69,8 +69,7 @@ EOF
 
 launch_burpsuite() {
     print_status "Launching Burp Suite Professional..."
-    "$BURP_SCRIPT" || error_status "Failed to launch Burp Suite!"
-    sleep 5s
+    "$BURP_SCRIPT" & sleep 10s || error_status "Failed to launch Burp Suite!"
 }
 
 start_key_generator() {

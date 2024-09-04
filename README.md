@@ -3,7 +3,7 @@
 **Enhance Your Testing Skills with Burp Suite Professional**
 *~Test like a Pro, with Ignorance is a Bliss as a Motto*
 
-![BurpSuite-Banner](images/BurpSuitePro_2.png)
+![BurpSuite-Banner](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/BurpSuitePro_2.png)
 
 ## Disclaimer
 This repository is intended solely for educational purposes. or maybe not who knows?
@@ -11,7 +11,7 @@ This repository is intended solely for educational purposes. or maybe not who kn
 ## Overview
 This repository provides a streamlined method for installing Burp Suite Professional with a single command. While a manual installation guide is also available, we recommend the automated process for convenience.
 
-![BurpSuite-Professional](images/BurpSuitePro_3.png)
+![BurpSuite-Professional](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/BurpSuitePro_3.png)
 
 # Linux Installation
 
@@ -42,6 +42,8 @@ sudo yum install -y java-22-openjdk java-22-openjdk-devel git curl wget
 sudo pacman -S jdk-openjdk git curl wget
 ```
 
+[prerequisites](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisites.gif)
+
 ## Installation
 
 ### Automated Installation
@@ -51,6 +53,8 @@ To install Burp Suite Professional, run the following command (root user):
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/install.sh | sudo bash
 ```
 Note: Make sure to enter your password after running this command as it is executed with root privileges.
+
+[installation](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/installation.gif)
 
 ### Manual Installation
 If you prefer a manual installation, follow the steps below:
@@ -75,6 +79,7 @@ To run Burp Suite Professional, execute the following command:
 ```bash
 burpsuitepro
 ```
+[usage](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage.gif)
 
 ## Uninstallation
 
@@ -84,6 +89,8 @@ To uninstall Burp Suite Professional, run the following command (root user):
 ```bash
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/uninstall.sh | sudo bash
 ```
+
+[uninstallation](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/uninstallation.gif)
 
 ### Manual Uninstallation
 
@@ -118,7 +125,7 @@ cd BurpSuite-Pro/Linux
 sudo bash update.sh
 ```
 
-![BurpSuite-Professional](images/BurpSuitePro_1.png)
+![BurpSuite-Professional](https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/BurpSuitePro_1.png)
 
 # Windows Installation
 
