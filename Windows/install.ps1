@@ -1,73 +1,68 @@
-# Set Wget Progress to Silent, Becuase it slows down Downloading by 50x
-echo "Setting Wget Progress to Silent, Becuase it slows down Downloading by 50x`n"
+# Set Wget Progress to Silent, because it slows down downloading by 50x
+echo "Setting Wget Progress to Silent, because it slows down downloading by 50x`n"
 $ProgressPreference = 'SilentlyContinue'
 
-# Check JDK-21 or later Availability or Download JDK-21 or later
-$jdk21 = Get-WmiObject -Class Win32_Product -filter "Vendor='Oracle Corporation'" |where Caption -clike "Java(TM) SE Development Kit 21*"
-if (!($jdk21)){
-    echo "`t`tDownnloading Java JDK-21 or latest version ...."
-    wget "https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.exe" -O jdk-21.exe  
-    echo "`n`t`tJDK-21 Downloaded, lets start the Installation process"
-    start -wait jdk-21.exe
-    rm jdk-21.exe
-}else{
-    echo "Required JDK-21 is Installed"
-    $jdk21
+# Variables
+$repoUrl = "https://github.com/sdmrf/BurpSuite-Pro.git"
+$burpDir = "C:\sdmrf\burpsuitepro"
+$burpCloneDir = "$HOME\BurpSuite-Pro"
+$burpScript = "C:\sdmrf\burpsuitepro\burp.bat"
+$burpReleasesUrl = "https://portswigger.net/burp/releases"
+$loaderJarUrl = "https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/BurpLoaderKeyGen.jar"
+
+function Print-Status($message) {
+    Write-Host "$message" -ForegroundColor Blue
 }
 
-# Check JRE-8 Availability or Download JRE-8
-$jre8 = Get-WmiObject -Class Win32_Product -filter "Vendor='Oracle Corporation'" |where Caption -clike "Java 8 Update *"
-if (!($jre8)){
-    echo "`n`t`tDownloading Java JRE ...."
-    wget "https://javadl.oracle.com/webapps/download/AutoDL?BundleId=250129_d8aa705069af427f9b83e66b34f5e380" -O jre-8.exe
-    echo "`n`t`tJRE-8 Downloaded, lets start the Installation process"
-    start -wait jre-8.exe
-    rm jre-8.exe
-}else{
-    echo "`n`nRequired JRE-8 is Installed`n"
-    $jre8
+function Error-Status($message) {
+    Write-Host "$message" -ForegroundColor Red
+    exit 1
 }
 
-# Downloading Burp Suite Professional
-if (Test-Path burpsuite_pro_v*.jar){
-    echo "Burp Suite Professional JAR file is available.`nChecking its Integrity ...."
-    if (((Get-Item burpsuite_pro_v*.jar).length/1MB) -lt 500 ){
-        echo "`n`t`tFiles Seems to be corrupted `n`t`tDownloading Latest Burp Suite Professional ...."
-		$version = (Invoke-WebRequest -Uri "https://portswigger.net/burp/releases/community/latest" -UseBasicParsing).Links.href | Select-String -Pattern "product=pro&amp;version=*" | Select-Object -First 1 | ForEach-Object { [regex]::Match($_, '\d+\.\d+\.\d+').Value }
-		wget "https://portswigger-cdn.net/burp/releases/download?product=pro&version=&type=jar" -O "burpsuite_pro_v$version.jar"
-        echo "`nBurp Suite Professional is Downloaded.`n"
-    }else {echo "File Looks fine. Lets proceed for Execution"}
-}else {
-    echo "`n`t`tDownloading Latest Burp Suite Professional ...."
-	$version = (Invoke-WebRequest -Uri "https://portswigger.net/burp/releases/community/latest" -UseBasicParsing).Links.href | Select-String -Pattern "product=pro&amp;version=*" | Select-Object -First 1 | ForEach-Object { [regex]::Match($_, '\d+\.\d+\.\d+').Value }
-	wget "https://portswigger-cdn.net/burp/releases/download?product=pro&version=&type=jar" -O "burpsuite_pro_v$version.jar"
-    echo "`nBurp Suite Professional is Downloaded.`n"
+# Cleanup existing directory
+if (Test-Path $burpCloneDir) {
+    Print-Status "Cleaning up existing directory $burpCloneDir..."
+    Remove-Item -Recurse -Force $burpCloneDir || Error-Status "Cleanup failed!"
 }
 
-# Creating Burp.bat file with command for execution
-if (Test-Path burp.bat) {rm burp.bat}
-$path = "java --add-opens=java.desktop/javax.swing=ALL-UNNAMED--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED -javaagent:`"$pwd\loader.jar`" -noverify -jar `"$pwd\burpsuite_pro_v$version.jar`""
-$path | add-content -path Burp.bat
-echo "`nBurp.bat file is created"
+# Clone the repository
+Print-Status "Cloning the Burp Suite Professional repository..."
+git clone $repoUrl $burpCloneDir || Error-Status "Cloning failed!"
 
+# Download Burp Suite Professional
+Print-Status "Downloading the latest Burp Suite Professional..."
+New-Item -Path $burpDir -ItemType Directory -Force
+$html = Invoke-WebRequest -Uri $burpReleasesUrl -UseBasicParsing
+$version = ($html.Links.href | Select-String -Pattern "professional-community-[0-9]{4}\.[0-9]+\.[0-9]+").Matches.Value.Split("-")[1]
+$downloadLink = "https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=$version"
+Invoke-WebRequest -Uri $downloadLink -OutFile "$burpDir\burpsuite_pro.jar" || Error-Status "Download failed!"
+Print-Status "Downloaded Burp Suite Version: $version"
 
-# Creating Burp-Suite-Pro.vbs File for background execution
-if (Test-Path Burp-Suite-Pro.vbs) {
-   Remove-Item Burp-Suite-Pro.vbs}
-echo "Set WshShell = CreateObject(`"WScript.Shell`")" > Burp-Suite-Pro.vbs
-add-content Burp-Suite-Pro.vbs "WshShell.Run chr(34) & `"$pwd\Burp.bat`" & Chr(34), 0"
-add-content Burp-Suite-Pro.vbs "Set WshShell = Nothing"
-echo "`nBurp-Suite-Pro.vbs file is created."
+# Download Burp Loader Key Generator
+Print-Status "Downloading the latest Burp Loader Key Generator..."
+Invoke-WebRequest -Uri $loaderJarUrl -OutFile "$burpDir\BurpLoaderKeyGen.jar" || Error-Status "Failed to download BurpLoaderKeyGen.jar!"
 
-# Remove Additional files
-rm Linux_setup.sh
-del -Recurse -Force .\.github\
+# Generate batch script for Burp Suite
+Print-Status "Generating executable script for Burp Suite Professional..."
+$burpScriptContent = @"
+@echo off
+java --add-opens=java.desktop/javax.swing=ALL-UNNAMED ^
+     --add-opens=java.base/java.lang=ALL-UNNAMED ^
+     --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED ^
+     --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED ^
+     --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED ^
+     -javaagent:$burpDir\BurpLoaderKeyGen.jar ^
+     -noverify ^
+     -jar $burpDir\burpsuite_pro.jar
+"@
+Set-Content -Path $burpScript -Value $burpScriptContent
+Print-Status "Script generated at $burpScript"
 
+# Make the script executable and run Burp Suite
+Print-Status "Launching Burp Suite Professional..."
+Start-Process "cmd.exe" -ArgumentList "/c $burpScript" || Error-Status "Failed to launch Burp Suite!"
 
-# Lets Activate Burp Suite Professional with keygenerator and Keyloader
-echo "Reloading Environment Variables ...."
-$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User") 
-echo "`n`nStarting Keygenerator ...."
-start-process java.exe -argumentlist "-jar loader.jar"
-echo "`n`nStarting Burp Suite Professional"
-java --add-opens=java.desktop/javax.swing=ALL-UNNAMED--add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED -javaagent:"loader.jar" -noverify -jar "burpsuite_pro_v$version.jar"
+# Start Key Generator
+Print-Status "Starting Key Generator..."
+Start-Process "java" -ArgumentList "-jar $burpDir\BurpLoaderKeyGen.jar" || Error-Status "Failed to start the Key Generator!"
+Print-Status "Key Generator process has started. Follow the instructions to generate the key."
