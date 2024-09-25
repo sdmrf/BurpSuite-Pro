@@ -36,19 +36,20 @@ function Cleanup-ExistingDir {
 # Function to clone the Burp Suite Professional repository
 function Clone-Repo {
     Print-Status "Cloning the Burp Suite Professional repository..."
-    git clone $repoUrl $burpCloneDir -ErrorAction Stop
+    git clone $repoUrl $burpCloneDir -q
 }
 
 # Function to download the latest Burp Suite Professional
 function Download-BurpSuite {
     Print-Status "Downloading the latest Burp Suite Professional..."
     Print-Status "Please wait while we complete the process :)"
+    Print-Status "This may take a while depending on your internet speed..."
     
-    $html = Invoke-WebRequest -Uri $burpReleasesUrl -UseBasicParsing
+    $html = Invoke-WebRequest -Uri $burpReleasesUrl -UseBasicParsing 
     $version = $html.Links | Select-String -Pattern 'professional-community-\d+\.\d+\.\d+' | Select-Object -First 1 | ForEach-Object { [regex]::Match($_.ToString(), '\d+\.\d+\.\d+').Value }
     
     $downloadLink = "https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
-    New-Item -Path $burpDir -ItemType Directory -Force | Out-Null
+    New-Item -Path $burpDir -ItemType Directory -Force | Out-Null 
     Invoke-WebRequest -Uri $downloadLink -OutFile "$burpDir\burpsuite_pro.jar" -ErrorAction Stop
     Print-Status "Downloaded Burp Suite Version: $version"
 }

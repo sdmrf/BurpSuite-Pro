@@ -156,7 +156,11 @@ sudo bash update.sh
 
 Before proceeding with the installation, ensure that the following dependencies are installed on your system:
 
-- `PowerShell` - for executing scripts
+- `git` - for cloning this repository || [Download Git](https://git-scm.com/downloads)
+
+- `Java` - for running Burp Suite Professional || [Download Java](https://www.java.com/en/download/)
+
+- `PowerShell` - for executing scripts 
 
 ## Installation
 
@@ -200,7 +204,7 @@ To run Burp Suite Professional, click on the `Burp-Suite-Pro.vbs` file.
 
 You can also create a shortcut for the `Burp-Suite-Pro.vbs` file on your desktop for easy access.
 
-Steps to create a shortcut:
+### Steps to create a shortcut:
 
 1. Right-click on the `Burp-Suite-Pro.vbs` file.
 2. Click on `Send to`.
