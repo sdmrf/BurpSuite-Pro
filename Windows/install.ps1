@@ -7,6 +7,7 @@ $burpCloneDir = "$env:USERPROFILE\BurpSuite-Pro"
 $burpScript = "C:\Program Files\burpsuitepro.bat"
 $burpReleasesUrl = "https://portswigger.net/burp/releases"
 $loaderJarUrl = "https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/BurpLoaderKeyGen.jar"
+$jdkUrl = "https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.exe"
 
 # Function to print status messages
 function Print-Status {
@@ -23,6 +24,40 @@ function Error-Status {
     )
     Write-Host "$message" -ForegroundColor Red
     exit 1
+}
+
+# Function to check if Java is installed
+function Check-Java {
+    $javaPath = Get-Command java -ErrorAction SilentlyContinue
+    if (-not $javaPath) {
+        return $false
+    }
+
+    $javaVersion = & java -version 2>&1 | Select-String -Pattern 'version'
+    if ($javaVersion -match '(\d+\.\d+\.\d+)') {
+        $version = $matches[1]
+        Print-Status "Java version $version is installed."
+        return $version
+    }
+    
+    return $false
+}
+
+# Function to install Java JDK and JRE
+function Install-Java {
+    if (-not (Check-Java)) {
+        Print-Status "Installing the latest Java JDK (21) and JRE..."
+        
+        # Download JDK 21
+        $jdkInstallerPath = "$env:TEMP\jdk-21-windows-x64-installer.exe"
+        Invoke-WebRequest -Uri $jdkUrl -OutFile $jdkInstallerPath -ErrorAction Stop
+        Start-Process -FilePath $jdkInstallerPath -ArgumentList "/s" -Wait
+        Remove-Item -Path $jdkInstallerPath -Force
+
+        Print-Status "Java JDK and JRE installed successfully."
+    } else {
+        Print-Status "Java is already installed."
+    }
 }
 
 # Function to clean up existing directory
@@ -66,7 +101,7 @@ function Generate-Script {
     
     $batContent = @"
 @echo off
-java --add-opens=java.desktop/javax.swing=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED -javaagent:""$burDir\BurpLoaderKeyGen.jar"" -noverify -jar "$burpDir\burpsuite_pro.jar"
+java --add-opens=java.desktop/javax.swing=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED -javaagent:""$burpDir\BurpLoaderKeyGen.jar"" -noverify -jar "$burpDir\burpsuite_pro.jar"
 "@
     
     Set-Content -Path $burpScript -Value $batContent -ErrorAction Stop
@@ -91,6 +126,7 @@ function Start-KeyGenerator {
 function Main {
     Cleanup-ExistingDir
     Clone-Repo
+    Install-Java
     Download-BurpSuite
     Download-LoaderJar
     Generate-Script
