@@ -53,7 +53,7 @@ function Install-Java {
         
         # Download JDK 21
         $jdkInstallerPath = "$env:TEMP\jdk-21-windows-x64-installer.exe"
-        Invoke-WebRequest -Uri $jdkUrl -OutFile $jdkInstallerPath -ErrorAction Stop
+        Start-BitsTransfer -Source $jdkUrl -Destination $jdkInstallerPath
         Start-Process -FilePath $jdkInstallerPath -ArgumentList "/s" -Wait
         Remove-Item -Path $jdkInstallerPath -Force
 
@@ -80,22 +80,26 @@ function Clone-Repo {
 # Function to download the latest Burp Suite Professional
 function Download-BurpSuite {
     Print-Status "Downloading the latest Burp Suite Professional..."
-    Print-Status "Please wait while we complete the process :)"
     Print-Status "This may take a while depending on your internet speed..."
-    
+
     $html = Invoke-WebRequest -Uri $burpReleasesUrl -UseBasicParsing 
     $version = $html.Links | Select-String -Pattern 'professional-community-\d+\.\d+\.\d+' | Select-Object -First 1 | ForEach-Object { [regex]::Match($_.ToString(), '\d+\.\d+\.\d+').Value }
     
-    $downloadLink = "https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version=&"
-    New-Item -Path $burpDir -ItemType Directory -Force | Out-Null 
-    Invoke-WebRequest -Uri $downloadLink -OutFile "$burpDir\burpsuite_pro.jar" -ErrorAction Stop
+    $downloadLink = "https://portswigger-cdn.net/burp/releases/download?product=pro&type=Jar&version="
+    New-Item -Path $burpDir -ItemType Directory -Force | Out-Null
+    
+    # Optimized download using Start-BitsTransfer
+    Start-BitsTransfer -Source $downloadLink -Destination "$burpDir\burpsuite_pro.jar"
     Print-Status "Downloaded Burp Suite Version: $version"
 }
 
 # Function to download the Burp Loader Key Generator
 function Download-LoaderJar {
     Print-Status "Downloading the latest Burp Loader Key Generator..."
-    Invoke-WebRequest -Uri $loaderJarUrl -OutFile "$burpDir\BurpLoaderKeyGen.jar" -ErrorAction Stop
+    
+    # Optimized download using Start-BitsTransfer
+    Start-BitsTransfer -Source $loaderJarUrl -Destination "$burpDir\BurpLoaderKeyGen.jar"
+    Print-Status "Burp Loader Key Generator downloaded successfully."
 }
 
 # Function to generate the executable script for Burp Suite Professional
@@ -128,9 +132,9 @@ function Start-KeyGenerator {
 # Function to reload environment variables
 function Reload-EnvVariables {
     Print-Status "Reloading environment variables..."
-    # Use 'rundll32' to refresh environment variables
-    & rundll32 sysdm.cpl,EditEnvironmentVariables
-    Print-Status "Environment variables reloaded."
+    $currentPath = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = $currentPath
+    Print-Status "Environment variables reloaded successfully."
 }
 
 # Function to create a VBS file to launch Burp Suite
