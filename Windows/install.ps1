@@ -3,8 +3,11 @@
 # Variables
 $repoUrl = "https://github.com/sdmrf/BurpSuite-Pro.git"
 $burpDir = "C:\sdmrf\BurpSuitePro"
-$burpCloneDir = "$env:USERPROFILE\BurpSuite-Pro"
-$burpScript = "C:\Program Files\burpsuitepro.bat"
+$burpCloneDir = "C:\sdmrf\BurpSuite-Pro"
+$burpScript = "$burpDir\burpsuitepro.bat"
+$burpVbsScript = "$burpDir\burpsuite_launcher.vbs"
+$burpIconPath = "$burpCloneDir\BurpSuitePro.ico"
+$desktopPath = [System.IO.Path]::Combine([System.Environment]::GetFolderPath('Desktop'), 'BurpSuitePro.lnk')
 $burpReleasesUrl = "https://portswigger.net/burp/releases"
 $loaderJarUrl = "https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/BurpLoaderKeyGen.jar"
 $jdkUrl = "https://download.oracle.com/java/21/latest/jdk-21_windows-x64_bin.exe"
@@ -122,6 +125,41 @@ function Start-KeyGenerator {
     Print-Status "Key Generator process has started. Follow the instructions to generate the key."
 }
 
+# Function to reload environment variables
+function Reload-EnvVariables {
+    Print-Status "Reloading environment variables..."
+    # Use 'rundll32' to refresh environment variables
+    & rundll32 sysdm.cpl,EditEnvironmentVariables
+    Print-Status "Environment variables reloaded."
+}
+
+# Function to create a VBS file to launch Burp Suite
+function Create-VbsLauncher {
+    Print-Status "Creating VBS launcher for Burp Suite..."
+    
+    $vbsContent = @"
+Set WshShell = CreateObject("WScript.Shell")
+WshShell.Run chr(34) & "$burpScript" & Chr(34), 0
+Set WshShell = Nothing
+"@
+
+    Set-Content -Path $burpVbsScript -Value $vbsContent -ErrorAction Stop
+    Print-Status "VBS Launcher created at $burpVbsScript"
+}
+
+# Function to create a shortcut with an icon on the desktop
+function Create-Shortcut {
+    Print-Status "Creating shortcut on the desktop..."
+    
+    $WScriptShell = New-Object -ComObject WScript.Shell
+    $shortcut = $WScriptShell.CreateShortcut($desktopPath)
+    $shortcut.TargetPath = $burpVbsScript
+    $shortcut.IconLocation = $burpIconPath
+    $shortcut.Save()
+
+    Print-Status "Shortcut created on the desktop with icon."
+}
+
 # Main execution
 function Main {
     Cleanup-ExistingDir
@@ -130,6 +168,9 @@ function Main {
     Download-BurpSuite
     Download-LoaderJar
     Generate-Script
+    Create-VbsLauncher
+    Reload-EnvVariables
+    Create-Shortcut
     Launch-BurpSuite
     Start-KeyGenerator
 }
