@@ -162,7 +162,7 @@ Before proceeding with the installation, ensure that the following dependencies 
 
 - `PowerShell` - for executing scripts 
 
-<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisite_windows.gif" width="500">
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisites_windows.gif" width="500">
 
 ## Installation
 
