@@ -50,7 +50,7 @@ sudo yum install -y java-22-openjdk java-22-openjdk-devel git curl wget
 sudo pacman -S jdk-openjdk git curl wget
 ```
 
-<img alt="prerequisites" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisites.gif" width="500">
+<img alt="prerequisites" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisites_linux.gif" width="500">
 
 ## Installation
 
@@ -64,7 +64,7 @@ curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/install.sh
 
 Note: Make sure to enter your password after running this command as it is executed with root privileges.
 
-<img alt="installation" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/installation.gif" width="500">
+<img alt="installation" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/installation_linux.gif" width="500">
 
 ### Manual Installation
 
@@ -96,7 +96,7 @@ To run Burp Suite Professional, execute the following command:
 burpsuitepro
 ```
 
-<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage.gif" width="500">
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage_linux.gif" width="500">
 
 ## Uninstallation
 
@@ -108,7 +108,7 @@ To uninstall Burp Suite Professional, run the following command (root user):
 curl https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Linux/uninstall.sh | sudo bash
 ```
 
-<img alt="uninstallation" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/uninstallation.gif" width="500">
+<img alt="uninstallation" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/uninstallation_linux.gif" width="500">
 
 ### Manual Uninstallation
 
@@ -162,6 +162,8 @@ Before proceeding with the installation, ensure that the following dependencies 
 
 - `PowerShell` - for executing scripts 
 
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/prerequisite_windows.gif" width="500">
+
 ## Installation
 
 ### Automated Installation
@@ -171,6 +173,8 @@ To install Burp Suite Professional, run the following command:
 ```powershell
 iex ((New-Object System.Net.WebClient).DownloadString('https://raw.githubusercontent.com/sdmrf/BurpSuite-Pro/main/Windows/install.ps1'))
 ```
+
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/installation_windows.gif" width="500">
 
 ### Manual Installation
 
@@ -199,6 +203,8 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 ```
 
 ## Usage
+
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage_windows.gif" width="500">
 
 To run Burp Suite Professional, click on the `Burp-Suite-Pro.vbs` file.
 
