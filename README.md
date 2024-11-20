@@ -158,7 +158,8 @@ Before proceeding with the installation, ensure that the following dependencies 
 
 - `git` - for cloning this repository || [Download Git](https://git-scm.com/downloads)
 
-- `Java` - for running Burp Suite Professional || [Download Java](https://www.java.com/en/download/) (Optional — installation is now included in the script)
+- `Java` - for running Burp Suite Professional || [Download Java](https://www.java.com/en/download/) 
+(Optional — installation of latest Java is now included in the script)
 
 - `PowerShell` - for executing scripts 
 
@@ -206,6 +207,8 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 
 To run Burp Suite Professional, click on the desktop shortcut.
 
+<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage_windows.gif" width="500">
+
 Alternatively, you can run the script manually:
 
 1. Change the directory:
@@ -220,7 +223,9 @@ cd C:\sdmrf\BurpSuitePro\
 .\burpsuite_launcher.vbs
 ```
 
-### Creating a Shortcut for .vbs File (Obsolete — creation of shortcut is now included in the script)
+### Creating a Shortcut for `.vbs` File.
+(Obsolete — creation of shortcut is now included in the script)
+
 If any problems occur during installation, you can use this method and create a desktop shortcut for it.
 
 1. Right-click on the Burp-Suite-Pro.vbs file.
@@ -229,7 +234,6 @@ If any problems occur during installation, you can use this method and create a 
    - Right-click the shortcut and select Properties.
    - Click Change Icon, browse for the BurpSuitePro.ico file in the repository, and apply the changes.
 
-<img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage_windows.gif" width="500">
 ## Uninstallation
 
 ### Automated Uninstallation
