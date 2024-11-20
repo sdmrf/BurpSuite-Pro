@@ -158,7 +158,7 @@ Before proceeding with the installation, ensure that the following dependencies 
 
 - `git` - for cloning this repository || [Download Git](https://git-scm.com/downloads)
 
-- `Java` - for running Burp Suite Professional || [Download Java](https://www.java.com/en/download/)
+- `Java` - for running Burp Suite Professional || [Download Java](https://www.java.com/en/download/) (Optional — installation is now included in the script)
 
 - `PowerShell` - for executing scripts 
 
@@ -204,29 +204,32 @@ Set-ExecutionPolicy Unrestricted -Scope Process
 
 ## Usage
 
+To run Burp Suite Professional, click on the desktop shortcut.
+
+Alternatively, you can run the script manually:
+
+1. Change the directory:
+
+```powershell
+cd C:\sdmrf\BurpSuitePro\
+```
+
+2. Run the script:
+
+```powershell
+.\burpsuite_launcher.vbs
+```
+
+### Creating a Shortcut for .vbs File (Obsolete — creation of shortcut is now included in the script)
+If any problems occur during installation, you can use this method and create a desktop shortcut for it.
+
+1. Right-click on the Burp-Suite-Pro.vbs file.
+2. Select Send to > Desktop (create shortcut).
+3. Change the shortcut icon:
+   - Right-click the shortcut and select Properties.
+   - Click Change Icon, browse for the BurpSuitePro.ico file in the repository, and apply the changes.
+
 <img alt="usage" src="https://raw.githubusercontent.com/sdmrf/BurpSuiteLoaderGen/main/Media/usage_windows.gif" width="500">
-
-To run Burp Suite Professional, click on the `Burp-Suite-Pro.vbs` file.
-
-You can also create a shortcut for the `Burp-Suite-Pro.vbs` file on your desktop for easy access.
-
-### Steps to create a shortcut:
-
-1. Right-click on the `Burp-Suite-Pro.vbs` file.
-2. Click on `Send to`.
-3. Click on `Desktop (create shortcut)`.
-4. Change the icon of the shortcut by following these steps:
-   - Right-click on the shortcut.
-   - Click on `Properties`.
-   - Click on `Change Icon`.
-   - Click on `Browse`.
-   - Select the `BurpSuitePro.ico` file from this repository.
-   - Click on `Open`.
-   - Click on `OK`.
-   - Click on `Apply`.
-   - Click on `OK`.
-5. Now, you can access Burp Suite Professional by double-clicking on the shortcut.
-
 ## Uninstallation
 
 ### Automated Uninstallation
